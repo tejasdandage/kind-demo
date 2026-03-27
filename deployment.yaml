@@ -19,13 +19,20 @@ spec:
         ports:
         - containerPort: 80
         env:
-        - name: APP_ENV            # variable name inside pod
+        - name: APP_ENV
           valueFrom:
             configMapKeyRef:
-              name: nginx-config   # configmap name
-              key: APP_ENV         # key from configmap
-        - name: DB_PASSWORD        # variable name inside pod
+              name: nginx-config
+              key: APP_ENV
+        - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: nginx-secret   # secret name
-              key: DB_PASSWORD     # key from secret
+              name: nginx-secret
+              key: DB_PASSWORD
+        volumeMounts:
+        - name: myvolume
+          mountPath: /tmp/mydata
+      volumes:
+      - name: myvolume
+        persistentVolumeClaim:
+          claimName: nginx-pvc
