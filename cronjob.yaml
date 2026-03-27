@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nginx-backup
+  namespace: nginx-ns
+spec:
+  schedule: "* * * * *"          # every minute (for testing)
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backup
+            image: busybox
+            command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Backup started at $(date)" &&
+              cp /tmp/mydata/myfile.txt /tmp/mydata/myfile-backup.txt &&
+              echo "Backup completed!" || echo "Nothing to backup"
+            volumeMounts:
+            - name: myvolume
+              mountPath: /tmp/mydata
+          restartPolicy: OnFailure
+          volumes:
+          - name: myvolume
+            persistentVolumeClaim:
+              claimName: nginx-pvc
